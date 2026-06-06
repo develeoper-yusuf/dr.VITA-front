@@ -22,7 +22,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className="border-t border-line py-4 text-center text-xs text-stone">
-                © {new Date().getFullYear()} Maison Glow. Barcha huquqlar himoyalangan.
+                © {new Date().getFullYear()} Doctor · VITA Barcha huquqlar himoyalangan.
             </div>
         </footer>
     );

@@ -95,7 +95,7 @@ export default function Home() {
                             siz esa <span className="price-final">shoh asar</span>.
                         </h1>
                         <p className="text-stone text-base md:text-lg max-w-lg mt-7 leading-relaxed">
-                            Maison Glow — premium kosmetika kolleksiyasi. Tabiiy tarkib, mukammal sifat va sizga atalgan parvarish.
+                            Doctor·VITA — premium kosmetika kolleksiyasi. Tabiiy tarkib, mukammal sifat va sizga atalgan parvarish.
                             Yangi mavsumda <span className="text-rose font-semibold">25% gacha chegirma</span>.
                         </p>
                         <div className="mt-9 flex flex-wrap items-center gap-4">

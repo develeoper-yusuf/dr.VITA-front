@@ -33,9 +33,9 @@ export default function Login() {
     return (
         <div className="min-h-[80vh] grid lg:grid-cols-2" data-testid="login-page">
             <div className="hidden lg:block bg-cream relative overflow-hidden">
-                <img src="https://static.prod-images.emergentagent.com/jobs/42a44add-5feb-4f26-bbbe-91660dd15858/images/39d70f5718f5c8be7fe3951eb48908e47d734b618f8948a5093f15ef753f34ac.png" alt="" className="w-full h-full object-cover opacity-90" />
+                <img src="IMG_4237.PNG" alt="" className="w-full h-full object-cover opacity-90" />
                 <div className="absolute bottom-10 left-10 right-10 text-noir">
-                    <div className="text-xs uppercase tracking-[0.3em] text-rose">Maison · Glow</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-rose">Doctor·VITA</div>
                     <h2 className="font-serif text-5xl mt-2">Xush kelibsiz.</h2>
                     <p className="text-stone mt-2 max-w-sm">Hisobingizga kiring va o'zingiz uchun mukammal parvarishni davom ettiring.</p>
                 </div>

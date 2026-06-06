@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
-    LogOut, Plus, Trash2, Users, ShoppingBag, TrendingUp, Banknote,
+    LogOut, Plus, Trash2, Pencil, Users, ShoppingBag, TrendingUp, Banknote,
     FileDown, FileText, Percent, Wallet, ArrowUpRight, ClipboardList
 } from "lucide-react";
 import {
@@ -31,6 +31,8 @@ export default function DirectorDashboard() {
     const [auditLogs, setAuditLogs] = useState([]);
     const [openWorker, setOpenWorker] = useState(false);
     const [wForm, setWForm] = useState({ name:"", surname:"", phone:"", email:"", password:"" });
+    const [editWorker, setEditWorker] = useState(null);
+    const [eForm, setEForm] = useState({ name:"", surname:"", phone:"", email:"", password:"" });
 
     const load = useCallback(async () => {
         const [s, u, w, o, sa, at, lp, al] = await Promise.all([
@@ -67,6 +69,33 @@ export default function DirectorDashboard() {
         catch (e) { toast.error(formatApiError(e.response?.data?.detail) || e.message); }
     };
 
+    const openEditWorkerDialog = (w) => {
+        setEForm({ name: w.name || "", surname: w.surname || "", phone: w.phone || "", email: w.email || "", password: "" });
+        setEditWorker(w);
+    };
+
+    useEffect(() => {
+        if (editWorker) {
+            setEForm({ name: editWorker.name || "", surname: editWorker.surname || "", phone: editWorker.phone || "", email: editWorker.email || "", password: "" });
+        }
+    }, [editWorker?.id]);
+
+    const updateWorker = async (e) => {
+        e.preventDefault();
+        const workerId = editWorker.id;
+        try {
+            const payload = { ...eForm };
+            if (!payload.password) delete payload.password;
+            await api.patch(`/users/workers/${workerId}`, payload);
+            toast.success("Sotuvchi ma'lumotlari yangilandi");
+            setEditWorker(null);
+            setEForm({ name: "", surname: "", phone: "", email: "", password: "" });
+            await load();
+        } catch (err) {
+            toast.error(formatApiError(err.response?.data?.detail) || err.message);
+        }
+    };
+
     const orderMarkers = orders.map(o => ({
         lat: o.location.lat, lng: o.location.lng, kind: "order",
         title: `${o.customer_name} ${o.customer_surname}`,
@@ -83,7 +112,7 @@ export default function DirectorDashboard() {
                 <div className="max-w-7xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
                     <div>
                         <div className="font-serif text-xl text-noir leading-none">Direktor paneli</div>
-                        <div className="text-xs text-stone">Maison Glow CRM</div>
+                        <div className="text-xs text-stone">Doctor·VITA</div>
                     </div>
                     <Button variant="ghost" onClick={logout} data-testid="dir-logout"><LogOut className="w-4 h-4 mr-1"/> Chiqish</Button>
                 </div>
@@ -286,9 +315,14 @@ export default function DirectorDashboard() {
                                         <div className="text-sm text-stone">{w.email}</div>
                                         <div className="text-sm text-stone">{w.phone}</div>
                                     </div>
-                                    <Button variant="ghost" onClick={() => deleteWorker(w.id)} className="text-rose hover:bg-rose/10" data-testid={`delete-worker-${w.id}`}>
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        <Button variant="ghost" onClick={() => openEditWorkerDialog(w)} className="text-noir hover:bg-cream" data-testid={`edit-worker-${w.id}`}>
+                                            <Pencil className="w-4 h-4" />
+                                        </Button>
+                                        <Button variant="ghost" onClick={() => deleteWorker(w.id)} className="text-rose hover:bg-rose/10" data-testid={`delete-worker-${w.id}`}>
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             ))}
                             {workers.length === 0 && <div className="text-stone bg-cream rounded-xl p-6 text-center md:col-span-2">Hali sotuvchilar qo'shilmagan</div>}
@@ -433,6 +467,25 @@ export default function DirectorDashboard() {
                         <div><Label>Email</Label><Input data-testid="w-email" type="email" value={wForm.email} onChange={(e)=>setWForm({...wForm, email:e.target.value})} required/></div>
                         <div><Label>Parol</Label><Input data-testid="w-password" type="password" value={wForm.password} onChange={(e)=>setWForm({...wForm, password:e.target.value})} required minLength={6}/></div>
                         <Button type="submit" className="w-full bg-noir text-ivory hover:bg-rose rounded-full h-11" data-testid="w-submit">Yaratish</Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!editWorker} onOpenChange={(open) => { if (!open) { setEditWorker(null); setEForm({ name: "", surname: "", phone: "", email: "", password: "" }); } }}>
+                <DialogContent className="bg-ivory border-line rounded-2xl">
+                    <DialogHeader><DialogTitle className="font-serif text-2xl text-noir">Sotuvchini o'zgartirish</DialogTitle></DialogHeader>
+                    <form onSubmit={updateWorker} className="space-y-3" data-testid="edit-worker-form">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div><Label>Ism</Label><Input value={eForm.name} onChange={(e)=>setEForm({...eForm, name:e.target.value})} required/></div>
+                            <div><Label>Familiya</Label><Input value={eForm.surname} onChange={(e)=>setEForm({...eForm, surname:e.target.value})} /></div>
+                        </div>
+                        <div><Label>Telefon</Label><Input value={eForm.phone} onChange={(e)=>setEForm({...eForm, phone:e.target.value})}/></div>
+                        <div><Label>Email</Label><Input type="email" value={eForm.email} onChange={(e)=>setEForm({...eForm, email:e.target.value})} required/></div>
+                        <div>
+                            <Label>Yangi parol <span className="text-stone font-normal text-xs">(bo'sh qoldirsangiz o'zgarmaydi)</span></Label>
+                            <Input type="password" value={eForm.password} onChange={(e)=>setEForm({...eForm, password:e.target.value})} minLength={6} placeholder="••••••"/>
+                        </div>
+                        <Button type="submit" className="w-full bg-noir text-ivory hover:bg-rose rounded-full h-11">O'zgartirish</Button>
                     </form>
                 </DialogContent>
             </Dialog>
